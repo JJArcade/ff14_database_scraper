@@ -1,4 +1,6 @@
 import sqlite3, re, json, requests, bs4
+import plotly.offline as ply
+import plotly.graph_objs as go
 
 class recipe_calculator:
     def __init__(self, DATABASE):
@@ -200,5 +202,25 @@ class recipe_calculator:
                         AND job_name=?", (self.curr_char["char_id"],recipe["job"]))
                     job_level = self.curs.fetchall()[0][0]
                     inserts = [recipe["id"],per_exp,job_level,self.curr_char["char_id"]]
+                    print(query)
+                    print(inserts)
                     self.curs.execute(query, tuple(inserts))
                     self.conn.commit()
+
+    ##MAKE A PLOT
+    def simple_plot(self):
+        ids_query = "SELECT recipe_id FROM exp_records GROUP BY recipe_id"
+        self.curs.execute(ids_query)
+        recipe_ids = self.curs.fetchall()[0]
+        fetch_query = "SELECT exp_gained, char_level FROM exp_records WHERE\
+            char_id=" + str(self.curr_char["char_id"]) + " AND recipe_id = ?"
+        for id in recipe_ids:
+            self.curs.execute(fetch_query, (id,))
+            data = self.curs.fetchall()
+            x_data = list(map(lambda x: x[1], data))
+            y_data = list(map(lambda x: x[0], data))
+            print(x_data)
+            print(y_data)
+            trace = go.Scatter(x = x_data, y = y_data, mode = "markers")
+            data = [trace]
+            ply.plot(data, filename="./basic-line.html")
