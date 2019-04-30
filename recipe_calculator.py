@@ -63,6 +63,7 @@ class recipe_calculator:
                     inserts.append(int(div_tag))
                 elif b == 2:
                     exps = div_tag.split(" / ")
+                    exps = list(map(lambda x: x.replace(',',''), exps))
                     inserts.append(int(exps[0]))
                     inserts.append(int(exps[1]))
                 elif b == 1:
