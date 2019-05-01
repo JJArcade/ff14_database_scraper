@@ -1,1 +1,5 @@
+# don't include pycache folder
 __pycache__
+
+# don't include test_area folder
+test_area
