@@ -17,9 +17,10 @@ class main_app():
         # make main fill
         self.solid_fill = urwid.SolidFill(u'\N{MEDIUM SHADE}')
         # move job list into filler
-        temp = self.all_jobs
-        #temp2 = urwid.Pile([temp, self.btn_pile])
-        self.main_page_layout = urwid.Padding(temp,
+        temp = urwid.BoxAdapter(self.all_jobs, 20)
+        temp2 = urwid.Pile([temp, self.btn_pile])
+        temp2 = urwid.Filler(temp2)
+        self.main_page_layout = urwid.Padding(temp2,
                 align='center',width=('relative',90))
         #self.line_box =  urwid.LineBox(self.btn_pile, self.name)
         self.line_box = urwid.LineBox(self.main_page_layout, self.name)
@@ -53,18 +54,21 @@ class main_app():
 
     
     def job_display(self):
+        # custom progress bar
+        class JobProgressBar(urwid.ProgressBar):
+            def get_text(self):
+                return "{} / {}".format(self.current, self.done)
+        
+        # get character info from database
+        
+        
         # start building job layout
         job_title = urwid.Text(u'JOB', align='left')
         job_level = urwid.Text(u'28', align='right')
         temp_columns = urwid.Columns([job_title, job_level], 1)
         
 
-        # custom progress bar
-        class JobProgressBar(urwid.ProgressBar):
-            def get_text(self):
-                return "{} / {}".format(self.current, self.done)
         
-        #job_progress = JobProgressBar(('normal','white','black'),('complete','white','dark cyan'))
         job_progress = JobProgressBar('normal', 'complete', 1000, 10000)
         job_progress.render((70,))
         job_container = urwid.Pile([temp_columns, job_progress])
